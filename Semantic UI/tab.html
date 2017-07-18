@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Semantic UI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.10/semantic.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.10/semantic.min.js"></script>
+    <style>
+      .sidebar > .item{
+        margin: 10px 10px;
+        width: 180px;
+      }
+      .top > .item{
+        margin: 10px 10px;
+        width: 180px;
+      }
+      #logo{
+        height:51px;
+        margin-top:7px;
+      }
+      i{
+        height: 40px;
+      }
+      .ui.container{
+        word-wrap: break-word;
+        margin-top: 80px;
+      }
+      #menu-button{
+        max-width:90px;
+        margin-left: 0px;
+      }
+
+      .ui.active.tab.segment{
+        background-color: rgba(140, 69, 69, 0.02);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="ui sidebar menu vertical labeled icon">
+      <img src="logo3.png" id="logo">
+      <a href="#" class="item">
+        <i class="user icon"></i>
+        User
+      </a>
+      <a href="#" class="item">
+        <i class="home icon"></i>
+        Home
+      </a>
+      <a href="#" class="item">
+        <i class="write icon"></i>
+        Post
+      </a>
+      <a href="#" class="item">
+        <i class="sign out icon"></i>
+        Logout
+      </a>
+    </div>
+    <div class="ui pusher">
+      <div class="ui top fixed demo menu">
+        <a class="item" id="menu-button">
+          <i class="sidebar icon"></i>
+          Menu
+        </a>
+        <img src="logo3.png" id="logo">
+      </div>
+      <div class="ui container" id="tab">
+        <div id="context2">
+          <div class="ui secondary menu">
+            <a class="active item" data-tab="fourth">
+              All events
+            </a>
+            <a class="item" data-tab="fifth">Events in your college</a>
+          </div>
+          <div class="ui active tab segment" data-tab="fourth">
+            Sort by: &nbsp
+<select class="ui normal dropdown" >
+<option value="rating">Rating</option>
+<option value="recent-events">Recently occuring events</option>
+<option value="view">View</option>
+</select>
+<div class="ui divider"></div>
+            <div class="ui items">
+              <div class="item">
+                <div class="content">
+                  <a class="header">Cute Dog</a>
+
+                  <div class="description">
+                    <p>Cute dogs come in a variety of shapes and sizes. Some cute dogs are cute for their adorable faces, others for their tiny stature, and even others for their massive size.</p>
+                    <p>Many people also have their own barometers for what makes a cute dog...<a href="#">Read more</a></p>
+                  </div>
+                  <div class="extra">
+                    <i class="eye icon"></i> 45 views  |
+                      <i> Posted by Anupam Asok</i>
+                  </div>
+                </div>
+              </div>
+              <div class="ui divider"></div>
+              <div class="item">
+                <div class="content">
+                  <a class="header">Cute Dog</a>
+
+                  <div class="description">
+                    <p>Cute dogs come in a variety of shapes and sizes. Some cute dogs are cute for their adorable faces, others for their tiny stature, and even others for their massive size.</p>
+                    <p>Many people also have their own barometers for what makes a cute dog...<a href="#">Read more</a></p>
+                  </div>
+                  <div class="extra">
+                    <i class="eye icon"></i> 45 views  |
+                      <i> Posted by Anupam Asok</i>
+                  </div>
+                </div>
+              </div>
+              <div class="ui divider"></div>
+              <div class="item">
+                <div class="content">
+                  <a class="header">Cute Dog</a>
+
+                  <div class="description">
+                    <p>Cute dogs come in a variety of shapes and sizes. Some cute dogs are cute for their adorable faces, others for their tiny stature, and even others for their massive size.</p>
+                    <p>Many people also have their own barometers for what makes a cute dog...<a href="#">Read more</a></p>
+                  </div>
+                  <div class="extra">
+                    <i class="eye icon"></i> 45 views  |
+                      <i> Posted by Anupam Asok</i>
+                  </div>
+                </div>
+              </div>
+              <div class="ui divider"></div>
+
+                <div class="item">
+                  <div class="content">
+                    <a class="header">Cute Dog</a>
+                    <div class="description">
+                      <p>Cute dogs come in a variety of shapes and sizes. Some cute dogs are cute for their adorable faces, others for their tiny stature, and even others for their massive size.</p>
+                      <p>Many people also have their own barometers for what makes a cute dog...<a href="#">Read more</a></p>
+                    </div>
+                    <div class="extra">
+                      <i class="eye icon"></i>32 views |
+                      <i> Posted by Kuttan</i>
+                    </div>
+                  </div>
+                </div>
+
+
+          </div>
+        </div>
+          <div class="ui tab segment" data-tab="fifth">
+            No events in your college uploaded
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+    $('.ui.normal.dropdown').dropdown();
+    $('#menu-button').click(function() {
+      $('.ui.sidebar').sidebar('toggle');
+    });
+    $('#context2 .menu .item')
+  .tab({
+    context: 'parent'
+  })
+;
+    </script>
+
+  </body>
+
+</html>

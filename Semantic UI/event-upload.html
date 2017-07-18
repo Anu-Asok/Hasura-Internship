@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Semantic UI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.10/semantic.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.10/semantic.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui-calendar/0.0.8/calendar.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui-calendar/0.0.8/calendar.min.css" />
+    <style>
+      .item{
+        margin: 10px 10px;
+        width: 180px;
+      }
+      #logo{
+        height:51px;
+        margin-top:7px;
+      }
+      i{
+        height: 40px;
+      }
+      .container{
+        word-wrap: break-word;
+        margin-bottom: 30px;
+      }
+      #menu-button{
+        max-width:90px;
+        margin-left: 0px;
+      }
+      .ui.form{
+        max-width: 700px;
+        margin: 0 auto;
+        margin-top: 80px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="ui sidebar menu vertical labeled icon">
+      <img src="logo3.png" id="logo">
+      <a href="#" class="item">
+        <i class="user icon"></i>
+        User
+      </a>
+      <a href="#" class="item">
+        <i class="home icon"></i>
+        Home
+      </a>
+      <a href="#" class="item">
+        <i class="write icon"></i>
+        Post
+      </a>
+      <a href="#" class="item">
+        <i class="sign out icon"></i>
+        Logout
+      </a>
+    </div>
+    <div class="ui pusher">
+      <div class="ui top fixed demo menu">
+        <a class="item" id="menu-button">
+          <i class="sidebar icon"></i>
+          Menu
+        </a>
+        <img src="logo3.png" id="logo">
+      </div>
+      <div class="ui justified container">
+        <div class="ui form error">
+          <div class="ui error message" id="error">
+              Title cannot be empty
+         </div>
+         <script>
+          $('#error').hide();
+         </script>
+          <div class="field">
+            <label>
+              <label data-tooltip="Title is mandatory" data-position="right center">
+                Title *
+              </label>
+            </label>
+            <div class="ui input left icon">
+              <i class="write icon"></i>
+              <input type="text" placeholder="Title" id="title">
+            </div>
+          </div>
+
+
+
+          <div class="field">
+            <label>
+              <label data-tooltip="Date is mandatory" data-position="right center">
+                Date *
+              </label>
+            </label>
+            <div class="ui calendar" id="date">
+              <div class="ui input left icon">
+                <i class="calendar icon"></i>
+                <input type="text" placeholder="Date" id="date-value">
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Time</label>
+            <div class="ui calendar" id="time">
+              <div class="ui input left icon">
+                <i class="wait icon"></i>
+                <input type="text" placeholder="Time" id="time-value">
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Registration link</label>
+              <div class="ui input left icon">
+                <i class="linkify icon"></i>
+                <input type="text" placeholder="Registration link" id="reg-link">
+              </div>
+          </div>
+
+
+          <div class="field">
+            <label>
+              <label data-tooltip="Description is mandatory" data-position="right center">
+                Description *
+              </label>
+            </label>
+            <textarea placeholder="Write your description here..." id="description"></textarea>
+          </div>
+
+          <div class="field">
+            <button class="ui fluid grey button" id="submit">
+              <i class="upload icon"></i>
+              Upload event
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    $('#error').hide();
+    function formatting(description) {
+      description=description.split('\n');
+      description=description.join('<br>');
+      return description;
+    }
+    $('#menu-button').click(function() {
+      $('.ui.sidebar').sidebar('toggle');
+    });
+    $('#submit').click(function () {
+      var title=$('#title').val().trim();
+      var date=$('#date-value').val().trim();
+      var time=$('#time-value').val().trim();
+      var link=$('#reg-link').val().trim();
+      var description=$('#description').val().trim();
+      description=formatting(description);
+      if (title.length==0){
+        window.scrollTo(0,0);
+        $('#error').html("Title cannot be empty").show();
+        return;
+      }
+      if (date.length==0){
+        window.scrollTo(0,0);
+        $('#error').html("Date cannot be empty").show();
+        return;
+      }
+      if (description.length==0){
+        window.scrollTo(0,0);
+        $('#error').html("Description cannot be empty").show();
+        return;
+      }
+      $('#submit').addClass('loading');
+    });
+    function submit(){
+      var description=$('#description').val();
+      var request = new XMLHttpRequest();
+      request.open('POST','http://data.c100.hasura.me/v1/query',true);
+      console.log("Request made");
+       request.setRequestHeader('Content-Type','application/json');
+       request.setRequestHeader('Authorization','Bearer o1fq3kklutpybhsqjcecdfp21ddijf81');
+       request.send(JSON.stringify({
+         "type":"insert",
+         "args":{
+           "table":"event",
+           "objects":[
+             {
+               "title":"Coding marathon!",
+               "description":description,
+               "user_id":'1'
+             }]
+          }
+       }));
+       request.onreadystatechange=function () {
+         if(request.readyState==XMLHttpRequest.DONE){
+           if(request.status==200){
+             alert("SEND");
+           }
+         }
+       }
+     }
+    var today = new Date();
+    $('#time').calendar({
+      type: 'time'
+    });
+    $('#date').calendar({
+      type:'date',
+      minDate: new Date(today.getFullYear(), today.getMonth(), today.getDate())
+    });
+    //To set time constraint for today
+    var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    var currentDate=months[today.getMonth()] +" "+ today.getDate() +", "+ today.getFullYear();
+    var prevDate="";
+    setInterval(function () {
+      var newDate=$('#date-value').val();
+      if (prevDate != newDate){
+        prevDate=newDate;
+        if(newDate==currentDate){
+          $('#time').calendar({
+            type: 'time',
+            minDate: new Date(today.getTime())
+          });
+          $('#time-value').val("");
+        }
+        else{
+          $('#time').calendar({
+            type: 'time'
+          });
+        }
+      }
+    },100);
+    </script>
+  </body>
+</html>
