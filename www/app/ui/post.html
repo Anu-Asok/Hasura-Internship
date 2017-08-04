@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Post | College Buddy</title>
+    <meta name="theme-color" content="#86915c">
+    <link rel="shortcut icon" href="/ui/images/icon.gif">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/ui/style/style.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.10/semantic.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.10/semantic.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui-calendar/0.0.8/calendar.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui-calendar/0.0.8/calendar.min.css" />
+    <style>
+      .ui.form{
+        max-width: 700px;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- Sidebar menu options -->
+    <div class="ui sidebar menu vertical labeled icon">
+      <img src="/ui/images/logo.png" id="logo">
+      <a href="#" class="item" id="menu-user-info">
+        <i class="user icon"></i>
+        <span id="user"></span>
+      </a>
+      <a href="/" class="item">
+        <i class="home icon"></i>
+        Home
+      </a>
+      <a href="/post" class="item">
+        <i class="write icon"></i>
+        Post
+      </a>
+      <a href="#" class="item" id="logout">
+        <i class="sign out icon"></i>
+        Logout
+      </a>
+    </div>
+
+    <!-- Pusher contents -->
+    <div class="ui pusher">
+
+      <!-- Menu button top attached -->
+      <div class="ui top attached demo menu">
+        <a class="item" id="menu-button">
+          <i class="sidebar icon"></i>
+          Menu
+        </a>
+        <a href="/">
+          <img src="/ui/images/logo.png" id="logo">
+        </a>
+      </div>
+
+      <!-- Container inside pusher -->
+      <div class="ui justified container">
+        <div class="ui form error">
+          <div class="ui error message" id="error">
+          </div>
+          <div class="field">
+            <label>
+              <label data-tooltip="Title is mandatory" data-position="right center">
+                Title *
+              </label>
+            </label>
+            <div class="ui input left icon">
+              <i class="write icon"></i>
+              <input type="text" placeholder="Title" id="title">
+            </div>
+          </div>
+          <div class="field">
+            <label>
+              <label data-tooltip="Date is mandatory" data-position="right center">
+                Date *
+              </label>
+            </label>
+            <div class="ui calendar" id="date">
+              <div class="ui input left icon">
+                <i class="calendar icon"></i>
+                <input type="text" placeholder="Date" id="date-value">
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label>
+              <label data-tooltip="Time is mandatory" data-position="right center">
+                Time *
+              </label>
+            </label>
+            <div class="ui calendar" id="time">
+              <div class="ui input left icon">
+                <i class="wait icon"></i>
+                <input type="text" placeholder="Time" id="time-value">
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Registration link</label>
+              <div class="ui input labeled">
+                <div class="ui label">
+                  https://
+                </div>
+                <input type="text" placeholder="Registration link" id="reg-link">
+              </div>
+          </div>
+          <div class="field">
+            <label>
+              <label data-tooltip="Description is mandatory" data-position="right center">
+                Description *
+              </label>
+            </label>
+            <textarea placeholder="Write your description here..." id="description"  style="height:20px;" ></textarea>
+          </div>
+          <div class="field">
+            <button class="ui fluid grey button" id="submit">
+              <i class="upload icon"></i>
+              Upload event
+            </button>
+          </div>
+        </div>  <!-- closing form div -->
+      </div>  <!-- container closing div -->
+    </div>  <!-- pusher closing div-->
+    <script src="/ui/script/script.js"></script>
+    <script>
+      // Description formatting
+      $('#error').hide();
+      function formatting(description) {
+        description=description.split('\n');
+        description=description.join('<br>');
+        return description;
+      }
+
+      var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+      // Event submit function
+      $('#submit').click(function () {
+        var title=$('#title').val().trim();
+        var date=$('#date-value').val().trim();
+        var time=$('#time-value').val().trim();
+        var link=$('#reg-link').val().trim();
+        var description=$('#description').val().trim();
+        description=formatting(description);
+        if (title.length==0){
+          window.scrollTo(0,0);
+          $('#error').html("Title cannot be empty").show();
+          return;
+        }
+        if (date.length==0){
+          window.scrollTo(0,0);
+          $('#error').html("Date cannot be empty").show();
+          return;
+        }
+        if (description.length==0){
+          window.scrollTo(0,0);
+          $('#error').html("Description cannot be empty").show();
+          return;
+        }
+        if(time.length==0){
+          window.scrollTo(0,0);
+          $('#error').html("Time cannot be empty").show();
+          return;
+        }
+        time+='Z'
+        if(time.length==5)
+          time='0'+time;
+        date=date.split(' ');
+        month=(months.indexOf(date[0])+1).toString();
+        year=date[2];
+        day=date[1].split(',')[0];
+        if (day.length==1)
+          day='0'+day;
+        if (month.length==1)
+          month='0'+month;
+        var date_text=year+'-'+month+'-'+day;
+        $('#error').hide();
+        $('#submit').addClass('loading');
+        var obj={
+          "title":title,
+          "date":date_text,
+          "description":description,
+          "user_id":user_id,
+          "time":time
+        };
+        if(link.length!=0){
+          obj.reg_link='https://'+link;
+        }
+        console.log(obj);
+          $.ajax({
+            method: "POST",
+            url: "https://data.agrarian72.hasura-app.io/v1/query",
+            contentType: "application/json",
+            data: JSON.stringify({
+              "type":"insert",
+              "args":{
+                "table":"event",
+                "objects":[
+                  obj
+                ],
+                "returning":["id"]
+              }
+            }),
+            xhrFields: {
+              withCredentials: true
+            }
+          }).done(function(res){
+              window.location.replace('/event?event_id='+res.returning[0].id);
+          }).fail(function(xhr){
+            $('#error').html("Something went wrong").show();
+            $('#submit').removeClass('loading');
+          });
+      });
+
+
+      var today = new Date();
+      $('#time').calendar({
+        ampm: false,
+        type: 'time'
+      });
+
+      $('#date').calendar({
+        type:'date',
+        minDate: new Date(today.getFullYear(), today.getMonth(), today.getDate())
+      });
+
+      //To set time constraint for today
+      var currentDate=months[today.getMonth()] +" "+ today.getDate() +", "+ today.getFullYear();
+      var prevDate="";
+      setInterval(function () {
+        var newDate=$('#date-value').val();
+        if (prevDate != newDate){
+          prevDate=newDate;
+          if(newDate==currentDate){
+            $('#time').calendar({
+              type: 'time',
+              ampm: false,
+              minDate: new Date(today.getTime())
+            });
+            $('#time-value').val("");
+          }
+          else{
+            $('#time').calendar({
+              ampm: false,
+              type: 'time'
+            });
+          }
+        }
+      },100);
+    </script>
+  </body>
+</html>

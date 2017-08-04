@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Home | College Buddy</title>
+    <meta name="theme-color" content="#86915c">
+    <link rel="shortcut icon" href="/ui/images/icon.gif">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/ui/style/style.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.10/semantic.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.10/semantic.min.js"></script>
+    <style>
+      .ui.active.tab.segment{
+        background-color: rgba(140, 69, 69, 0.02);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar menu options -->
+    <div class="ui sidebar menu vertical labeled icon">
+      <img src="/ui/images/logo.png" id="logo">
+      <a href="#" class="item" id="menu-user-info">
+        <i class="user icon"></i>
+        <span id="user"></span>
+      </a>
+      <a href="/" class="item">
+        <i class="home icon"></i>
+        Home
+      </a>
+      <a href="/post" class="item">
+        <i class="write icon"></i>
+        Post
+      </a>
+      <a href="#" class="item" id="logout">
+        <i class="sign out icon"></i>
+        Logout
+      </a>
+    </div>
+    <!-- Pusher contents -->
+    <div class="ui pusher">
+      <!-- Menu button top attached -->
+      <div class="ui top attached demo menu">
+        <a class="item" id="menu-button">
+          <i class="sidebar icon"></i>
+          Menu
+        </a>
+        <a href="/">
+          <img src="/ui/images/logo.png" id="logo">
+        </a>
+      </div>
+      <!-- Container inside pusher -->
+      <div class="ui container" id="tab">
+        <!-- Tabs -->
+        <div class="ui secondary menu">
+          <a class="active item" data-tab="all-events" id="all-events">
+            All events
+          </a>
+          <a class="item" data-tab="college-events" id="college-events">Events in your college</a>
+        </div>
+        <!-- All events -->
+        <div class="ui active tab segment" data-tab="all-events">
+          <!-- Sort option -->
+          Sort by: &nbsp
+          <select class="ui normal dropdown" id="all-sort-options">
+            <option value="date">Recently occuring events</option>
+            <option value="rating">Rating</option>
+          </select>
+          <div class="ui divider"></div>
+          <!-- Event list -->
+          <div class="ui items">
+            <!-- event items -->
+          </div>
+        </div>
+        <!-- Events in your college -->
+        <div class="ui tab segment" data-tab="college-events">
+          Sort by: &nbsp
+          <select class="ui normal dropdown" id="college-sort-options">
+            <option value="date">Recently occuring events</option>
+            <option value="rating">Rating</option>
+          </select>
+          <div class="ui divider"></div>
+          <div class="ui items">
+
+          </div>
+        </div>
+      </div>  <!-- container closing div -->
+    </div>  <!-- pusher closing div-->
+    <script src="/ui/script/script.js"></script>
+    <script>
+      var bool=false;
+      function home_page(){
+        $('.ui.items').html(`<div class="ui active centered inline loader"></div>`);
+        var today=new Date();
+        var year=today.getFullYear(), day=today.getDate().toString(), month=(today.getMonth()+1).toString();
+        if (day.length==1)
+          day='0'+day;
+        if (month.length==1)
+          month='0'+month;
+        today=year+'-'+month+'-'+day;
+        //console.log(today);
+        if(bool==false)
+          var sortby=$('#all-sort-options').val();
+        else
+          var sortby=$('#college-sort-options').val();
+        var sortObj={
+          "column":sortby,
+          "nulls":"first"
+        };
+        var whereObj={
+          "date":{
+            "$gte":today
+          }
+        };
+        if (bool == true){
+          whereObj["college_name"]={
+            "$like":user_college
+          }
+        }
+        var ordArr=[sortObj];
+        if(sortby=='date')
+          ordArr.push('+time');
+        ordArr.push('-views');
+        $.ajax({
+          method:"POST",
+          url:"https://data.agrarian72.hasura-app.io/v1/query",
+          contentType: "application/json",
+          data: JSON.stringify({
+            "type":"select",
+            "args":{
+              "table":"event_details",
+              "columns":["*"],
+              "where":whereObj,
+              "order_by":ordArr
+            }
+          }),
+          xhrFields: {
+            withCredentials: true
+          }
+        }).done(function(res){
+          //console.log(res);
+          if(res.length==0)
+            $('.ui.items').html('Sorry, no events to show!');
+          else{
+            $('.ui.items').html('');
+            function event_item(i){
+              var obj=res[i];
+              var objDate = new Date(obj.date+' '+obj.time.substring(0,5));
+              if (sortby=='rating'){
+                var rating=obj.rating;
+                if(rating===null)
+                  var sort_option="No Rating";
+                else
+                  var sort_option='<i class=\"star icon\"></i>'+rating.toFixed(1)+'/5';
+              }
+              else{
+                sort_option = objDate.toDateString();
+              }
+              var now=new Date();
+              if (Date.parse(objDate)<Date.parse(now))
+                return;
+              noEvents=false;
+              var title=obj.title, description=obj.description.substring(0,150), views=obj.views, owner=obj.name, eventid=obj.id;
+              var item=`<div class="item">
+                          <div class="content">
+                            <a class="header" href="/event?event_id=${eventid}">
+                              ${title}
+                            </a>
+                            <div class="description">
+                              ${description}...
+                              <a href="/event?event_id=${eventid}">
+                                Read more
+                              </a>
+                            </div>
+                            <div class="extra">
+                              ${sort_option} | ${views} views | By ${owner}
+                            </div>
+                          </div>
+                        </div>
+                        <div class="ui divider"></div>`;
+                $('.ui.active.tab.segment .ui.items').append(item);
+            }
+            var noEvents=true;
+            if(sortby=='rating')
+              for(var i=res.length-1; i>=0; i-=1)
+                event_item(i);
+            else
+              for(var i=0; i<res.length; i+=1)
+                event_item(i);
+            if (noEvents==true)
+              $('.ui.items').html('Sorry, no events to show!');
+          }    
+        }).fail(function(xhr){
+          console.log(xhr);
+        });
+      }
+      $('#all-sort-options').change(home_page);
+      $('#college-sort-options').change(home_page);
+      home_page();
+      $('.ui.normal.dropdown').dropdown();
+      $('.menu .item').tab({context: 'parent'});
+
+      $('#all-events').click(function(){
+        bool=false;
+        home_page();
+      });
+
+      $('#college-events').click(function(){
+        bool=true;
+        home_page();
+      });
+    </script>
+
+  </body>
+
+</html>
